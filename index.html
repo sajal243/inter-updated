@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>React App with CDN</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- React CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <script>
+        // Your React components go here
+        const App = () => {
+            const temp = {
+                "type": "div",
+                "props": {
+                    "id": "container",
+                    "children": [
+                        {
+                            "type": "h1",
+                            "props": {
+                                "children": "Title text"
+                            }
+                        },
+                        {
+                            "type": "p",
+                            "props": {
+                                "children": "Some text inside paragraph"
+                            }
+                        },
+                    ]
+                }
+            };
+
+            const createElementFromJSON = (json) => {
+                const { type, props || children } = json;
+
+                // Extract children from props, ensuring props is defined and has children
+                const { children, ...otherProps } = props || {};
+
+                // Handle cases where children is not an array (e.g., a single string or element)
+                const childElements = Array.isArray(children)
+                    ? children.map((child, index) => {
+                        if (typeof child === 'string') {
+                            return child; // Return text nodes directly
+                        } else {
+                            return createElementFromJSON(child); // Recursively create elements
+                        }
+                    })
+                    : children; // Directly use children if not an array
+
+                return React.createElement(type, { ...otherProps, key: Date.now() + Math.random() }, childElements);
+            };
+
+            const element = createElementFromJSON(temp);
+
+            const rootElement = document.getElementById('root');
+            const root = ReactDOM.createRoot(rootElement); // Create root for concurrent mode
+            root.render(element); // Render the element into the root
+        };
+
+        // Call the App function to render the React app
+        App();
+    </script>
+</body>
+</html>
+y
